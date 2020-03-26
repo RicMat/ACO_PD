@@ -45,17 +45,29 @@ class ACO_PDG():
     def geometry_opt_path(self, old_path):
         new_path = [old_path[0]] #starting point
         i = 1
+        
         while i < len(old_path) - 1:
             current_pos=old_path[i] #step 1
-            tmp_path=[]
+            new_path.append(current_pos)
+            grid_subset=[]
             for j in range(max(current_pos[0] - 1, 0), min(current_pos[0] + 2, self.width)): 
                 for k in range(max(current_pos[1] - 1, 0), min(current_pos[1] + 2, self.height)):
                     if not (j, k) in self.obstacles: #step 2 remove obstacles
-                        tmp_path=[].append((j, k))
-            tmp_path=[].remove(grid) #step 2 remove taboo
-            tmp_path=[].remove(path[i-1])
+                        grid_subset.append((j, k))
+            grid_subset.remove(current_pos) #step 2 remove taboo
+            grid_subset.remove(old_path[i-1])
             
-            for tmp_pos in tmp_path: #step 3
+            signal=0
+            for tmp_pos in grid_subset: #step 3
+                if tmp_pos in old_path[i:]:
+                    tmp_signal = old_path[i:].index(tmp_pos)
+                    if tmp_signal > signal:
+                        signal = tmp_signal
+            
+            i = i + signal #step 5
+            
+        new_path.append(old_path[-1]) #add goal
+        return new_path
                 
             
         
