@@ -113,16 +113,38 @@ class ACO_PDG():
         x_p = previous[0]
         y_p = previous[1]
         grid_list = []
+        
+        #if x == 5:
+            #print("position {}   {}".format(x,y))
+            #print("before {}   {}".format(x_p,y_p))
         for i in range(max(x - 1, 0), min(x + 2, 20)):
             for j in range(max(y - 1, 0), min(y + 2, 20)):
                 if (not (i, j) == (x_p, y_p)) and (not (i, j) == (x, y)) and (not (i, j) in self.obstacles):
-                    grid_list.append((i, j))
+                    if ((i == x-1) and (j == y-1) and ((i+1, j) in self.obstacles)) or \
+                    ((i == x-1) and (j == y+1) and ((i, j+1) in self.obstacles)) or \
+                    ((i == x+1) and (j == y+1) and ((i-1, j) in self.obstacles)) or \
+                    ((i == x+1) and (j == y-1) and ((i, j-1) in self.obstacles)) or \
+                    ((i == x-1) and (j == y+1) and ((i-1, j) in self.obstacles)) or \
+                    ((i == x-1) and (j == y-1) and ((i, j+1) in self.obstacles)) or \
+                    ((i == x+1) and (j == y-1) and ((i+1, j) in self.obstacles)) or \
+                    ((i == x+1) and (j == y+1) and ((i, j-1) in self.obstacles)):
+                        continue
+                        #if x == 5:
+                            #print("not ok {}   {}".format(i,j))
+                    else:
+                        grid_list.append((i, j))
+                        #if x == 5:
+                            #print("ok {}   {}".format(i,j))
+                #else:
+                    #if x == 5:
+                        #if ((i, j) in self.obstacles):
+                            #print("scartata wall {}   {}".format(i,j))
         return grid_list
     
     def algorithm(self, Q): #core
         for t in range(self.cycle_num):
             plt.figure()
-            plt.imshow(self.pheromone_grid)
+            plt.imshow(self.pheromone_grid, cmap=plt.cm.gist_heat)
             plt.show()
             complete_paths = []
             tmp_pheromone = np.zeros(shape=(self.width, self.height))
@@ -178,11 +200,11 @@ class ACO_PDG():
     def plot(self, path):
         table = np.ones(shape=(self.width, self.height))
         for obstacle in self.obstacles:
-            table[obstacle[0], obstacle[1]] = 0.2
+            table[obstacle[0], obstacle[1]] = 0
         for grid in path:
             table[grid[0], grid[1]] = 0.5
         plt.figure()
-        plt.imshow(table)
+        plt.imshow(table, cmap=plt.cm.gist_heat)
         plt.show()
         return table
     
@@ -221,18 +243,21 @@ if __name__ == "__main__":
                  (16, 2), (16, 3), (16, 4), (16, 12), (16, 13), (16, 17),
                  (17, 3), (17, 4), (17, 12), (17, 13),
                  (18, 12)]
-    aco_pdg = ACO_PDG(20, 20, Obstacles, 200, 10, 0.01, 0.5, np.array([0, 0]), np.array([19, 19]), 5)
+    
+    aco_pdg = ACO_PDG(20, 20, Obstacles, 25, 10, 0.01, 0.5, np.array([0, 0]), np.array([19, 19]), 5)
     heuristic_grid = aco_pdg.heuristic_grid
     plt.figure()
     plt.imshow(heuristic_grid)
     plt.show()
+    #print("kkk")
     path = aco_pdg.ant_act()
     aco_pdg.plot(path)
-    print("aaa")
+    #print("aaa")
     path = aco_pdg.geometry_opt_path(path)
     aco_pdg.plot(path)
-    print("bbb")
+    #print("bbb")
     o = aco_pdg.algorithm(10)
+    #print("ccccccccccccc")
     aco_pdg.plot(o[0][1])
     print("Shortest path length: " + str(o[0][0]))
 
