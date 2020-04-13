@@ -76,7 +76,6 @@ class ACO_PDG():
     # algorithm
     
     def Brushfire_Algorithm(self, max_iter): #step 2
-        '''Find the shortest distance from an obstacle for each grid using Brushfire algorithm.'''
         sdo = float("inf") * np.ones(shape=(self.width, self.height))
         grid_traverse_mask = np.zeros(shape=(self.width, self.height))
         grid_list = []
@@ -98,7 +97,6 @@ class ACO_PDG():
         return sdo
     
     def Potential_Field_Heuristic(self, brushfire_iter): #step 2
-        '''Heuristic value over obstacles are not valid and should not be used.'''
         heuristic_grid = np.zeros(shape=(self.width, self.height))
         sdo = self.Brushfire_Algorithm(brushfire_iter)
         for i in range(self.width):
@@ -142,10 +140,11 @@ class ACO_PDG():
         return grid_list
     
     def algorithm(self, Q): #core
+        print("\nComputing ... ")
         for t in range(self.cycle_num):
-            plt.figure()
-            plt.imshow(self.pheromone_grid, cmap=plt.cm.gist_heat)
-            plt.show()
+            #plt.figure()
+            #plt.imshow(self.pheromone_grid, cmap=plt.cm.gist_heat)
+            #plt.show()
             complete_paths = []
             tmp_pheromone = np.zeros(shape=(self.width, self.height))
             for i in range(self.ant_num):
@@ -170,6 +169,7 @@ class ACO_PDG():
             self.pheromone_grid = (1 - self.evaporation_rate) * self.pheromone_grid  + tmp_pheromone
         
         complete_paths = sorted(complete_paths, key=lambda x: x[0])
+        print("\nCompleted")
         return complete_paths
                     
        
@@ -249,15 +249,13 @@ if __name__ == "__main__":
     plt.figure()
     plt.imshow(heuristic_grid)
     plt.show()
-    #print("kkk")
+    print("\nFirst run: ")
     path = aco_pdg.ant_act()
     aco_pdg.plot(path)
-    #print("aaa")
+    print("\nFirst run after geometry optimization: ")
     path = aco_pdg.geometry_opt_path(path)
     aco_pdg.plot(path)
-    #print("bbb")
     o = aco_pdg.algorithm(10)
-    #print("ccccccccccccc")
     aco_pdg.plot(o[0][1])
-    print("Shortest path length: " + str(o[0][0]))
+    print("\nShortest path: " + str(o[0][0]))
 
